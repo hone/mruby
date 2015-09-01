@@ -2,6 +2,7 @@ $ok_test = 0
 $ko_test = 0
 $kill_test = 0
 $pending_asserts = []
+$focus_asserts = false
 $asserts  = []
 $test_start = Time.now if Object.const_defined?(:Time)
 
@@ -37,8 +38,12 @@ def assertion_string(err, str, iso=nil, e=nil, bt=nil)
 end
 
 def assert(str = 'Assertion failed', iso = '', focus: false, &block)
+  $focus_asserts = true if focus
+
   $pending_asserts << Proc.new {
-    run_assert(str, iso) { block.call }
+    run_assert(str, iso) { block.call } if focus || !$focus_asserts
+    # only run tests if this is a focused test or there are no focused tests
+    run_assert(str, iso) { block.call } if focus || !$focus_asserts
   }
 end
 
