@@ -1,6 +1,7 @@
 $ok_test = 0
 $ko_test = 0
 $kill_test = 0
+$pending_asserts = []
 $asserts  = []
 $test_start = Time.now if Object.const_defined?(:Time)
 
@@ -35,6 +36,12 @@ def assertion_string(err, str, iso=nil, e=nil, bt=nil)
   msg
 end
 
+def assert(str = 'Assertion failed', iso = '', focus: false, &block)
+  $pending_asserts << Proc.new {
+    run_assert(str, iso) { block.call }
+  }
+end
+
 ##
 # Verify a code block.
 #
@@ -43,7 +50,7 @@ end
 # iso : The ISO reference code of the feature
 #       which will be tested by this
 #       assertion
-def assert(str = 'Assertion failed', iso = '')
+def run_assert(str = 'Assertion failed', iso = '')
   t_print(str, (iso != '' ? " [#{iso}]" : ''), ' : ') if $mrbtest_verbose
   begin
     $mrbtest_assert = []
@@ -214,6 +221,8 @@ end
 # Report the test result and print all assertions
 # which were reported broken.
 def report()
+  $pending_asserts.each {|a| a.call }
+
   t_print("\n")
 
   $asserts.each do |msg|
