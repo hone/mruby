@@ -37,11 +37,11 @@ def assertion_string(err, str, iso=nil, e=nil, bt=nil)
   msg
 end
 
-def assert(str = 'Assertion failed', iso = '', focus: false, &block)
-  $focus_asserts = true if focus
+def assert(str = 'Assertion failed', iso = '', metadata = {} &block)
+  $focus_asserts = true if metadata[:focus]
 
   $pending_asserts << Proc.new {
-    run_assert(str, iso) { block.call } if focus || !$focus_asserts
+    run_assert(str, iso) { block.call } if metadata[:focus] || !$focus_asserts
     # only run tests if this is a focused test or there are no focused tests
     run_assert(str, iso) { block.call } if focus || !$focus_asserts
   }
