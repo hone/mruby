@@ -78,7 +78,16 @@ module MRuby
         gemdir = "#{root}/mrbgems/#{params[:core]}"
       elsif params[:path]
         require 'pathname'
-        gemdir = Pathname.new(params[:path]).absolute? ? params[:path] : "#{root}/#{params[:path]}"
+        require 'fileutils'
+
+        gem_path    = Pathname.new(params[:path]).absolute? ? params[:path] : "#{root}/#{params[:path]}"
+        gem_rake    = eval(File.read(gem_path + "/mrbgem.rake"))
+        mrbgems_dir = "#{root}/build/mrbgems"
+        gemdir      = "#{mrbgems_dir}/#{gem_rake.name}"
+
+        FileUtils.rm_rf(gemdir)
+        FileUtils.mkdir_p(mrbgems_dir)
+        FileUtils.cp_r(gem_path, mrbgems_dir)
       elsif params[:git]
         url = params[:git]
         gemdir = "#{gem_clone_dir}/#{url.match(/([-\w]+)(\.[-\w]+|)$/).to_a[1]}"
