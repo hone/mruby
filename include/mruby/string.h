@@ -117,6 +117,7 @@ mrb_value mrb_str_pool(mrb_state *mrb, mrb_value str);
 mrb_int mrb_str_hash(mrb_state *mrb, mrb_value str);
 mrb_value mrb_str_dump(mrb_state *mrb, mrb_value str);
 mrb_value mrb_str_inspect(mrb_state *mrb, mrb_value str);
+static mrb_value mrb_str_freeze(mrb_state *mrb, mrb_value str);
 
 void mrb_noregexp(mrb_state *mrb, mrb_value self);
 void mrb_regexp_check(mrb_state *mrb, mrb_value obj);
